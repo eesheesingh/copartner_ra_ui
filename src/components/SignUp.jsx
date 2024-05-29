@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { closeIcon, signup } from "../assets";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const SignUp = ({ setIsSignedUp }) => {
@@ -42,11 +42,15 @@ const SignUp = ({ setIsSignedUp }) => {
       sessionStorage.setItem('stackholderId', stackholderId);
 
       const stackholderResponse = await axios.get(`${STACKHOLDER_API}/${stackholderId}`);
-      
+
       if (data.data.email.toLowerCase() === emailId.toLowerCase()) {
-        setIsSignedUp(true);
-        sessionStorage.setItem("visitedSignUp", "true");
-        navigate("/");
+        if (password === "Copartner@1234#") {
+          navigate("/reset", { state: { emailId, password } });
+        } else {
+          setIsSignedUp(true);
+          sessionStorage.setItem("visitedSignUp", "true");
+          navigate("/");  // Assume this is the route for the dashboard
+        }
       } else {
         setError("Email ID or Password does not match.");
       }
@@ -105,11 +109,12 @@ const SignUp = ({ setIsSignedUp }) => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <Link to="/reset">
-              <button className="w-full text-[14px] text-[#0081F1] text-right">
-                Forget Password?
-              </button>
-            </Link>
+            <button
+              className="w-full text-[14px] text-[#0081F1] text-right"
+              onClick={() => navigate("/reset", { state: { emailId, password } })}
+            >
+              Forget Password?
+            </button>
             <button
               type="submit"
               onClick={handleContinue}
